@@ -28,16 +28,12 @@ use std::io::Write;
 use std::{fmt::Debug, ops::Deref, str::FromStr};
 use uuid::Uuid;
 
-#[cfg(feature = "diesel")]
-#[derive(
-    Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Hash, AsExpression, FromSqlRow,
-)]
-#[diesel(sql_type = DieselUUID)]
-pub struct DieselUlid(rusty_ulid::Ulid);
-
-#[cfg(feature = "postgres")]
+/// A wrapper around Ulid for Diesel and Postgres compatibility.
 #[derive(Copy, Clone, PartialEq, Eq, PartialOrd, Ord, Serialize, Hash)]
-pub struct DieselUlid(rusty_ulid::Ulid);
+#[cfg_attr(feature = "diesel", derive(AsExpression, FromSqlRow))]
+#[cfg_attr(feature = "diesel", diesel(sql_type = DieselUUID))]
+pub struct DieselUlid(Ulid);
+
 
 impl DieselUlid {
     pub fn generate() -> Self {
